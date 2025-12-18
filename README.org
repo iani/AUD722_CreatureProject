@@ -18,7 +18,17 @@ Your audio file should be a mono (1 channel) wav file.  Its name should be the s
 
 * 2. Prepare your classes
 
-** 2.1. Put the folder CreatureClasses inside your SuperCollider Extensions folder.
+** 2.1. Put the class code inside your SuperCollider Extensions folder and recompile
+
+The class code is found in repository
+
+https://github.com/iani/AUD722_CreatureProject
+
+You can clone this with:
+
+git clone https://github.com/iani/AUD722_CreatureProject.git
+
+Put the cloned repository in your SuperCollider Extensions folder.
 
 Note: To find the location of the SuperCollider Extensions folder, run this in
 SuperCollider:
