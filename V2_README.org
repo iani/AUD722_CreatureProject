@@ -1,0 +1,6 @@
+#+title: V2 Readme
+
+Version 2 reworks the coupling between SonicEnvironment and Creature.
+Instead of SonicEnvironment calling Creature methods directly, SonicEnvironment uses the dependency mechanism to publish the change to new states.  Creatures register controllers to define their reaction to state changes.
+
+木 18 12 2025 10:26 - Implementation is pending.
