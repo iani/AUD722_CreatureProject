@@ -68,7 +68,7 @@ Cricket : Creature {
 }
 #+end_src
 
-* 3. Code the behavior of your creature
+* 4. Code the behavior of your creature
 
 For any state, write a method with the same name.  The method will run when the SonicEnvironment starts that state. Inside the method, use creature methods to add synths or tasks, release or stop, or substitute synths or tasks, as described below:
 
@@ -180,11 +180,11 @@ Release (stop) all running synths and tasks with releaseTime as release time.
 	}
 #+end_src
 
-* 4. Recompile the library for changes to take effect.
+* 5. Recompile the library for changes to take effect.
 
 To load the code saved in Creature subclass definitions, you must recompile the ScClass Library.  The shortcut for this is Command (or Control)-shift-l.
 
-* 5. Start the piece 
+* 6. Start the piece 
 
 #+begin_src sclang
 SonicEnvironment.start;
