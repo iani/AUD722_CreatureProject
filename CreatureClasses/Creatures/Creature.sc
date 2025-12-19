@@ -6,7 +6,6 @@ Frog : Creature {
 	...
 }
 
-THis makes it possible to automatically create one instance of each creature and add it to the Environment. 
 */
 
 Creature {
@@ -14,7 +13,10 @@ Creature {
 	classvar defaults; // default Creature instances for easy testing
 	classvar <>defaultBuffer;
 	classvar <>defaultFileName = "cricket.wav";
-	var <buffer;
+	classvar <>defaultStates = #[
+		\dawn, \morning, \day, \noon, \afternoon, \evening, \night 
+	];
+	var <buffer, <>states, <controller;
 
 	*asInstance { ^this.default }
 	asInstance { ^this }
@@ -81,6 +83,19 @@ Creature {
 
 	init {
 		buffer = buffers[this.class.name];
+		states = defaultStates.copy;
+		controller = this addModel: this; // enable pattern playing
+	}
+
+	addModel { | model |
+		var controller;
+		controller = SimpleController(model);
+		states do: { | s |
+			controller.put(s, { | model, change ... args |
+				this.perform(s, *args);
+			});
+		};
+		^controller;
 	}
 
 	*addSynthDefs {
@@ -130,12 +145,14 @@ Creature {
 	substituteTimed {  | process, dur, releaseTime |
 		this.release;
 		{ this.addTimed(process, dur, releaseTime); }.defer;
+		^process;
 	}
 	
 	// release previous and add new synth or task
 	substitute { | process, releaseTime |
 		this release: releaseTime;
 		this add: process;
+		^process;
 	}
 
 	// release all added processes
@@ -144,16 +161,16 @@ Creature {
 	}
 
 	// start tracking process for set, release.
-	add { | process | 
+	add { | process |
 		^process addModel: this;
 	}
 
 	addTask { | func |
-		this add: Task(func).play;
+		^this add: Task(func).play;
 	}
 
 	addLoop { | func |
-		this add: Task({ func.loop }).play;
+		^this add: Task({ func.loop }).play;
 	}
 
 	// add process, and stop it after dur seconds.
@@ -166,6 +183,29 @@ Creature {
 			};
 			controller.remove;
 		} defer: dur;
+		^process;
 	}
-	
+
+	stplay { | statesTimes | this.play(*statesTimes.flop) }
+	play { | argStates, durations = 5, repeats = 1, extras |
+		this.pbindPlay(
+			Pseq(argStates.asArray, repeats),
+			Pseq(durations.asArray, inf),
+			*extras
+		)
+	}
+
+	// shortcut:
+	pb { | statesPattern, timesPattern ... pbindPairs |
+		this.pbindPlay(statesPattern, timesPattern +pbindPairs)
+	}
+
+	pbindPlay { | statesPattern, timesPattern ... pbindPairs |
+		pbindPairs = [
+			\state, statesPattern,
+			\dur, timesPattern,
+			\play, { ~state.postln; this changed: ~state; }
+		] ++ pbindPairs;
+		this add: Pbind(*pbindPairs).play;
+	}
 }

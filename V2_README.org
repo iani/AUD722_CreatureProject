@@ -4,3 +4,13 @@ Version 2 reworks the coupling between SonicEnvironment and Creature.
 Instead of SonicEnvironment calling Creature methods directly, SonicEnvironment uses the dependency mechanism to publish the change to new states.  Creatures register controllers to define their reaction to state changes.
 
 木 18 12 2025 10:26 - Implementation is pending.
+
++ Step 1: (a) Use Controller for Environment-Creature coupling, (b) enable custom behavior specification and (c) test runs
+
+** Controller for Environment-Creature coupling  
+
+1. Controller: Environment issues changed at each state change - instead of calling methods
+2. Custom behavior specification: Creatures register themselves to environment by adding a controller that translates state messages to method calls. Each Creature class has a default controller, which an instance can override.
+3. Test runs: Write an event play function that calls changed on a given object, then attach a controller to a Creature on that object, and play a pattern with the custom event. 
+
+
