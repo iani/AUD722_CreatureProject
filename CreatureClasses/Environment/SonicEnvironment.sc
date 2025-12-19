@@ -72,7 +72,10 @@ SonicEnvironment {
 	makeCreatures {
 		creatures = Creature.allSubclasses collect: _.new;
 	}
-	
+
+	connectCreatures {
+		creatures do: { | c | c.addModel(this) }
+	}
 	start {
 		if (task.isPlaying) { ^"SonicEnvironment is already playing".postln; };
 		this.makeTask;
@@ -98,9 +101,10 @@ SonicEnvironment {
 	playState { | s |
 		postln("SonicEnvironment plays state:" + s);
 		currentState = s;
-		creatures do: { | c |
-			c release: releaseTime;
-			if (c respondsTo: s) { c perform: s; }
-		};
+		this.changed(s);
+		// creatures do: { | c |
+		// 	c release: releaseTime;
+		// 	if (c respondsTo: s) { c perform: s; }
+		// };
 	}
 }

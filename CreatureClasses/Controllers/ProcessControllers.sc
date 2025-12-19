@@ -51,3 +51,8 @@ TaskController : SimpleController {
 	addModel { | model | ^TaskController(model, this); }
 	stopProcess { if (this.isPlaying) { this.stop } }
 }
+
++ EventStreamPlayer {
+	addModel { | model | ^TaskController(model, this); }
+	stopProcess { if (this.isPlaying) { this.stop } }
+}
