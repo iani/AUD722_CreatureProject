@@ -48,17 +48,10 @@ Tsk : Creature {
 	night {
 		this add: {
 			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1) *
-				(~fmul.postln ?? { 10 }),
+				(~fmul ?? { 10 }),
 				0.1).ds
 		}.play;
 	}
 
-	// TODO: test adding of states/methods
-	parametric {
-		this add: {
-			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1), 0.1).ds
-		}.play;
-
-	}
 	
 }
