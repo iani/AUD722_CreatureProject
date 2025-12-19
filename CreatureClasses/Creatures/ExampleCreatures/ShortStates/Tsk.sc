@@ -48,10 +48,8 @@ Tsk : Creature {
 	night {
 		this add: {
 			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1) *
-				(~fmul ?? { 10 }),
+				(~fmul ?? { 1 }),
 				0.1).ds
 		}.play;
-	}
-
-	
+	}	
 }

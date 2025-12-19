@@ -187,6 +187,9 @@ Creature {
 	}
 
 	stplay { | statesTimes | this.play(*statesTimes.flop) }
+	*play { | argStates, durations = 5, repeats = 1, extras |
+		this.default.play(argStates, durations, repeats, extras);
+	}
 	play { | argStates, durations = 5, repeats = 1, extras |
 		this.pbindPlay(
 			Pseq(argStates.asArray, repeats),
@@ -201,6 +204,7 @@ Creature {
 	}
 
 	pbindPlay { | statesPattern, timesPattern ... pbindPairs |
+		if (pbindPairs.size < 2) { pbindPairs = [] };
 		pbindPairs = [
 			\state, statesPattern,
 			\dur, timesPattern,

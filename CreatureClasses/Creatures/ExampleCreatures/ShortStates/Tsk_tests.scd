@@ -38,7 +38,9 @@ Tsk.play(\evening);
 //
 Tsk.play(\night);
 
-Tsk.play(\night, args: [freq: Pwhite(1.0, 2.0, inf)]);
+Tsk.play(\night, 0.1, inf, [fmul: Pwhite(1.0, 2.0, inf)]);
+Tsk.play(\night, 0.1, 1, [fmul: Pwhite(1.0, 2.0, inf)]);
+Tsk.play(\night, extras: [fmul: 12]);
 Tsk.play(\night, 0.1, 3)
 Tsk.play([\day, \night], [0.1, 0.2, 0.1], 16)
 //:
