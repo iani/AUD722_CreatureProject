@@ -16,7 +16,7 @@ Creature {
 	classvar <>defaultStates = #[
 		\dawn, \morning, \day, \noon, \afternoon, \evening, \night 
 	];
-	var <buffer, <>states;
+	var <buffer, <>states, <controller;
 
 	*asInstance { ^this.default }
 	asInstance { ^this }
@@ -84,7 +84,7 @@ Creature {
 	init {
 		buffer = buffers[this.class.name];
 		states = defaultStates.copy;
-		this addModel: this; // enable pattern playing
+		controller = this addModel: this; // enable pattern playing
 	}
 
 	addModel { | model |
@@ -94,10 +94,9 @@ Creature {
 			controller.put(s, { | model, change ... args |
 				this.perform(s, *args);
 			});
-		}
+		};
+		^controller;
 	}
-
-
 
 	*addSynthDefs {
 		// subclasses can add their own synthdefs here
@@ -162,7 +161,7 @@ Creature {
 	}
 
 	// start tracking process for set, release.
-	add { | process | 
+	add { | process |
 		^process addModel: this;
 	}
 
@@ -188,18 +187,25 @@ Creature {
 	}
 
 	stplay { | statesTimes | this.play(*statesTimes.flop) }
-	play { | argStates, durations = 5, repeats = 1 |
+	play { | argStates, durations = 5, repeats = 1, extras |
 		this.pbindPlay(
 			Pseq(argStates.asArray, repeats),
-			Pseq(durations.asArray, inf)
+			Pseq(durations.asArray, inf),
+			*extras
 		)
 	}
 
-	pbindPlay { | statesPattern, timesPattern |
-		this add: Pbind(
+	// shortcut:
+	pb { | statesPattern, timesPattern ... pbindPairs |
+		this.pbindPlay(statesPattern, timesPattern +pbindPairs)
+	}
+
+	pbindPlay { | statesPattern, timesPattern ... pbindPairs |
+		pbindPairs = [
 			\state, statesPattern,
 			\dur, timesPattern,
-			\play, { ~state.postln; this changed: ~state },
-		).play;
+			\play, { ~state.postln; this changed: ~state; }
+		] ++ pbindPairs;
+		this add: Pbind(*pbindPairs).play;
 	}
 }

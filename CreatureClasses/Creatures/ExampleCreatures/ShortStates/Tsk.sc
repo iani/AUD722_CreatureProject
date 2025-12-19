@@ -7,7 +7,13 @@ Tsk : Creature {
 	}
 	morning {
 		this add: {
-			GrayNoise.ar(Env.perc.kr(2) * 0.1).dup			
+			Resonz.ar(
+				GrayNoise.ar(Env.perc(0.01, 2).kr(0) * 0.1),
+				// Line.kr(50, 2000, 2.5) * SinOsc.kr(Line.kr(3, 10, 3)).abs,
+				Line.kr(Rand(50, 2000), Rand(50, 2000), 2.5)
+				* SinOsc.kr(Line.kr(Rand(3, 10), Rand(3, 10), 2.5)).abs,
+				0.7
+			).ds(time:0.5);
 		}.play;
 	}
 	day {
@@ -41,7 +47,18 @@ Tsk : Creature {
 	}
 	night {
 		this add: {
-			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1), 0.1).ds
+			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1) *
+				(~fmul.postln ?? { 10 }),
+				0.1).ds
 		}.play;
 	}
+
+	// TODO: test adding of states/methods
+	parametric {
+		this add: {
+			Ringz.ar(Impulse.ar(0.0001), Line.kr(100, 350, 0.1), 0.1).ds
+		}.play;
+
+	}
+	
 }
