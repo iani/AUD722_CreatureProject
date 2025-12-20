@@ -1,3 +1,5 @@
+// This is an early prototype for running simulations on a group of creatures
+// After <2025-12-20>, see class EvoLab
 
 SonicEnvironment {
 	classvar default;   // the default environment. 
