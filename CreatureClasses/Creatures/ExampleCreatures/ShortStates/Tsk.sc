@@ -2,14 +2,14 @@
 Tsk : Creature {
  	dawn {
 		this add: {
-			WhiteNoise.ar(Env.perc.kr(2) * 0.1).dup
+			WhiteNoise.ar(Env.perc(~att ?? 0.01, ~rel ?? 1.0, ~amp ?? 0.1).kr(2)).dup
 		}.play;
 	}
+
 	morning {
 		this add: {
 			Resonz.ar(
 				GrayNoise.ar(Env.perc(0.01, 2).kr(0) * 0.1),
-				// Line.kr(50, 2000, 2.5) * SinOsc.kr(Line.kr(3, 10, 3)).abs,
 				Line.kr(Rand(50, 2000), Rand(50, 2000), 2.5)
 				* SinOsc.kr(Line.kr(Rand(3, 10), Rand(3, 10), 2.5)).abs,
 				0.7

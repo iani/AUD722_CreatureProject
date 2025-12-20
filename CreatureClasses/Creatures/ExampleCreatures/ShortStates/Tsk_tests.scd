@@ -1,3 +1,5 @@
+//:
+Tsk.play(\dawn, Pwhite(0.1, 0.4, inf), 100, [amp: Pwhite(0.01, 0.3, inf)]);
 //: bubbles
 Tsk.play(\night, Prand([1, 1, 2, 4]/25, inf), inf,
 	[fmul: Pwhite(0.15, 4.0, inf)]);
@@ -64,3 +66,19 @@ Tsk.states;
 Tsk.play(\parametric);
 Tsk.states = ()
 Tsk.play(\night);
+
+//============================================================ 
+//: WhiteNoise studies
+{
+	WhiteNoise.ar()
+}
+//:
+x = { MoogFF.ar(WhiteNoise.ar(01.1), MouseY.kr(100, 4000, 1), MouseX.kr(0, 4)) }.play(s);
+//:
+z = {
+    BHiPass.ar(
+        WhiteNoise.ar(0.1),
+        MouseX.kr(10, 20000, \exponential), // cutoff freq.
+        MouseY.kr(0.0, 1.0, \linear), // rq
+        0.5); // mul
+}.play
