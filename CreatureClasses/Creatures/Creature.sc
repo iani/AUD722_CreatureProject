@@ -13,10 +13,8 @@ Creature {
 	classvar defaults; // default Creature instances for easy testing
 	classvar <>defaultBuffer;
 	classvar <>defaultFileName = "cricket.wav";
-	classvar <>defaultStates = #[
-		\dawn, \morning, \day, \noon, \afternoon, \evening, \night 
-	];
-	var <buffer, <>states, <controller;
+
+	var <buffer, <>actions;
 
 	*asInstance { ^this.default }
 	asInstance { ^this }
@@ -35,13 +33,12 @@ Creature {
 		Creature.allSubclasses do: { | c |
 			defaults.put(c.name, c.new)
 		};
+		defaults.put(this.name, this.new);
 		^defaults;
 	}
 
 	// overwrite Object/Class release to enable custom Creature release:
-	*release {
-		this.default.release;
-	}
+	*release { this.default.release; }
 	// ------------------	
 	*initClass {
 		Class.initClassTree(ServerBoot);
@@ -83,19 +80,27 @@ Creature {
 
 	init {
 		buffer = buffers[this.class.name];
-		states = defaultStates.copy;
-		controller = this addModel: this; // enable pattern playing
+		actions = this.defaultActions;
+		// controller = this addModel: this; // enable pattern playing
 	}
 
-	addModel { | model |
-		var controller;
-		controller = SimpleController(model);
-		states do: { | s |
-			controller.put(s, { | model, change ... args |
-				this.perform(s, *args);
-			});
-		};
-		^controller;
+	defaultActions {
+		^(
+			ping: {
+				{ SinOsc.ar(400.rrand(4000), 0,
+					Env.perc(0.01, 0.1).kr(2)).dup / 10
+				}.play;
+				0.1;
+			},
+			tsk: {
+				{ WhiteNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup / 10 }.play;
+				0.1;
+			}
+		)
+	}
+
+	addActions { | argActions |
+		argActions keysValuesDo: { | key, value | actions[key] = value; }
 	}
 
 	*addSynthDefs {
@@ -125,7 +130,7 @@ Creature {
 
 	*audioFilesFolder { ^"~/CreaturesAudio/".standardizePath }
 	*fileName {
-		// subclasses define here the name of the file containing the buffer to be loaded.
+		// subclasses can overrride here the name of the audio file to be loaded
 		^this.name.asString.toLower ++ ".wav";
 	}
 
@@ -186,30 +191,66 @@ Creature {
 		^process;
 	}
 
-	stplay { | statesTimes | this.play(*statesTimes.flop) }
-	*play { | argStates, durations = 5, repeats = 1, extras |
-		this.default.play(argStates, durations, repeats, extras);
+	atplay { | actionsTimes |
+		^this.play(*(actionsTimes.flat.clump(2).flop collect: _.asPattern))
 	}
-	play { | argStates, durations = 5, repeats = 1, extras |
-		this.pbindPlay(
-			Pseq(argStates.asArray, repeats),
-			Pseq(durations.asArray, inf),
+
+	*play { | argActions, durations = 5, repeats = 1, extras |
+		^this.default.play(argActions, durations, repeats, extras);
+	}
+	play { | argActions, durations = 5, repeats = 1, extras |
+		^this.pbindPlay(
+			Pn(argActions.asPattern, repeats),
+			Pn(durations.asPattern, inf),
 			*extras
 		)
 	}
 
 	// shortcut:
-	pb { | statesPattern, timesPattern ... pbindPairs |
-		this.pbindPlay(statesPattern, timesPattern +pbindPairs)
+	pb { | actionsPattern, timesPattern ... pbindPairs |
+		^this.pbindPlay(actionsPattern, timesPattern, *pbindPairs)
 	}
 
-	pbindPlay { | statesPattern, timesPattern ... pbindPairs |
+	pbindPlay { | actionsPattern, timesPattern ... pbindPairs |
 		if (pbindPairs.size < 2) { pbindPairs = [] };
 		pbindPairs = [
-			\state, statesPattern,
-			\dur, timesPattern,
-			\play, { ~state.postln; this changed: ~state; }
+			\action, actionsPattern.asPattern,
+			\dur, timesPattern.asArray.flat.asPattern,
+			\play, {
+				var action, args;
+				#action, args = ~action.asArray; 
+				~action.postln;
+				actions[action].(*args);
+			}
 		] ++ pbindPairs;
-		this add: Pbind(*pbindPairs).play;
+		^Pbind(*pbindPairs).play;
 	}
+
+	chain { | actionsPattern ... pbindPairs |
+		if (pbindPairs.size < 2) { pbindPairs = [] };
+		pbindPairs = [
+			\action, actionsPattern.asPattern,
+			\play, {
+				var action, args;
+				#action, args = ~action.asArray; 
+				~action.postln;
+				~dur = actions[action].(*args);
+			}
+		] ++ pbindPairs;
+		^Pbind(*pbindPairs).play;
+	}
+
+	//------------------------------------------------------------
+	/*
+	addModel { | model |
+		var controller;
+		controller = SimpleController(model);
+		actions do: { | s |
+			controller.put(s, { | model, change ... args |
+				this.perform(s, *args);
+			});
+		};
+		^controller;
+	}
+	*/
 }
