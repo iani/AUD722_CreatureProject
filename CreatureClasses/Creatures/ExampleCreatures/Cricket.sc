@@ -13,7 +13,7 @@ States to cover:
 Cricket : Creature {
 
 	dawn {
-		this add: Task({
+		this substitute: Task({
 			loop {
 				(1..500).normalize(0.01, 0.3).reverse do: { | r |
 					this.addTimed(
@@ -50,11 +50,11 @@ Cricket : Creature {
 	}
 
 	morning {
-		this add: this.playBufLoop(0.2, 0.5);	
+		this substitute: this.playBufLoop(0.2, 0.5);	
 	}
 
 	day {
-		this add: Task({
+		this substitute: Task({
 			loop {
 				this.addTimed(
 					Synth(\panPlayBuf, [
@@ -72,7 +72,7 @@ Cricket : Creature {
 	}
 
 	noon {
-		this add: Task({
+		this substitute: Task({
 			loop {
 				this.addTimed(
 					Synth(\panPlayBuf, [
@@ -90,7 +90,7 @@ Cricket : Creature {
 	}
 
 	afternoon {
-		this add: Task({
+		this substitute: Task({
 			loop {
 				(1..100).normalize(0.01, 0.3).reverse do: { | r |
 					this.addTimed(
@@ -111,11 +111,11 @@ Cricket : Creature {
 	}
 
 	evening {
-		this add: this.playBufLoop;
+		this substitute: this.playBufLoop;
 	}
 
 	night {
-		this add: this.playBufLoop(2, 2.5);	
+		this substitute: this.playBufLoop(2, 2.5);	
 	}
 
 	playBufLoop { |rateMin=1, rateMax=2, delayMin=0.2, delayMax=2, amp=0.05|

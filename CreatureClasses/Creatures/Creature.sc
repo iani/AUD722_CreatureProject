@@ -38,7 +38,7 @@ Creature {
 	}
 
 	// overwrite Object/Class release to enable custom Creature release:
-	*release { this.default.release; }
+	*release { | dur = 0.03 |this.default.release(dur); }
 	// ------------------	
 	*initClass {
 		Class.initClassTree(ServerBoot);
@@ -46,14 +46,13 @@ Creature {
 			{
 				this.addSynthDefs;
 				this.allSubclasses do: { | c |
-					c.postln;
-					"adding synthdef for above class".postln;
+					// c.postln;
+					// "adding synthdef for above class".postln;
 					c.addSynthDefs
 				};
 				Server.default.sync;
 				this.loadBuffers;
 				Server.default.sync;
-				SonicEnvironment.makeDefault;
 			}.fork(AppClock)
 		};
 	}
@@ -70,7 +69,7 @@ Creature {
 	*loadDefaultBuffer {
 		var defaultPath;
 		defaultPath = this.audioFilesFolder +/+ defaultFileName;
-		postln("Loading default buffer from:\n" + defaultPath);
+		// postln("Loading default buffer from:\n" + defaultPath);
 		defaultBuffer = Buffer.read(Server.default, defaultPath);
 	}
 
@@ -81,7 +80,28 @@ Creature {
 	init {
 		buffer = buffers[this.class.name];
 		actions = this.defaultActions;
-		// controller = this addModel: this; // enable pattern playing
+		this.addCustomActions; // customizeable method for subclasses
+	}
+
+	// -------------------------------------------------
+	performAction { | ... argState |
+		var message, args;
+		#message, args = argState;
+		if (this respondsTo: message) {
+			^this.perform(message, *args)
+		}{
+			^actions[message].value(*args);
+		}
+	}
+	// edit this function to add your own actions to your class.
+	addCustomActions {
+		this addActions: (
+			test: {
+				// this is the sound of the action
+				{ PinkNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup / 10 }.play;
+				0.2; // this is the duration of the action
+			} // add more actions after this as you like
+		)
 	}
 
 	defaultActions {
@@ -111,15 +131,15 @@ Creature {
 	//============================================================ 
 	*loadBuffer {
 		var thePath;
-		postln("Loading buffer for" + this.name);
+		// postln("Loading buffer for" + this.name);
 		thePath = this.bufferPath;
-		"Buffer path is:".postln;
-		thePath.postln;
+		// "Buffer path is:".postln;
+		// thePath.postln;
 		if (File exists: thePath) {
 			buffers[this.name] = Buffer.read(Server.default, thePath);
 		}{
-			postln("Audiofile path not found:\n" + thePath);
-			"Using default buffer instead".postln;
+			// postln("Audiofile path not found:\n" + thePath);
+			// "Using default buffer instead".postln;
 			buffers[this.name] = defaultBuffer;
 		}
 	}

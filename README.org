@@ -16,6 +16,15 @@ Clone the repository https://github.com/iani/CreatureAudio into your home folder
 
 Your audio file should be a mono (1 channel) wav file.  Its name should be the same as your class name, *in lower case* and the extension should be =.wav=. For example, if your class is named =Cricket= then the audio file should be named =cricket.wav=.
 
+Note: You can also tell your creature class to load another file by editing its fileName class method. For example:
+
+#+begin_src sclang
+	,*fileName { // tell your creature to use file basssdrum.wav
+		// the file must be in the CreatureAudio folder, together with all other audio files.
+		^"bassdrum.wav";
+	}
+#+end_src
+
 * 2. Prepare your classes
 
 ** 2.1. Put the class code inside your SuperCollider Extensions folder and recompile
@@ -68,11 +77,58 @@ Cricket : Creature {
 }
 #+end_src
 
-* 4. Code the behavior of your creature
+* 4. Customize the behavior of your creature
 
-For any state, write a method with the same name.  The method will run when the SonicEnvironment starts that state. Inside the method, use creature methods to add synths or tasks, release or stop, or substitute synths or tasks, as described below:
+There are several ways to customize sounds to your creature:
+** 4.1 Add actions to the actions environment
 
-** Add synths or tasks
+/Note: This technique is good for prototyping, because it does not require recompiling the Class library./
+
+You can add actions to your class using the addActions method. These changes take effect immediately, without having to recompile the library.  The changes affect only the one instance that you send the addActions method to. If you send =addActions= to your class directly, then addActions operates on the default instance of that class. But you can also send =addActions= to any instance of your class, or any Creature instance in general. Here is an example, operating on the Cricket Creature class:
+
+#+begin_src sclang
+Cricket addActions: (
+	buzz: {
+		// this is the sound of the action
+		{ PinkNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup / 10 }.play;
+		0.2; // this is the duration of the action
+		// you must provide a duration for the action to work when chaining actions
+	}
+	// you can add more actions to different keys here. 
+	// , buzz2 {
+	// more sound production code here.
+	// }
+);
+#+end_src
+
+** 4.2 Add methods to your Creature subclass
+
+/Note: Use this technique when you want to add a behaviour permanently./
+
+Add methods to your Creature subclass that create sounds or perform tasks. This requires to recompile the SCClass Library in order for the changes in your Creature subclass code to become available. 
+
+*** Simple way:
+Code the synth or task process directly:
+#+begin_src sclang
+	bizz {
+		{ PinkNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup / 10 }.play;
+	}
+#+end_src
+
+Tasks or synths made this way are not tracked by your creature an cannot be stopped later. You may be ok with this if you have coded these synths or tasks to work once started without any further control. See the next section on how to enable basic control of your synth by adding it to the dependants of your creature. 
+
+*** Use add to connect your creature with the synth or task for later control
+If you want to add the synth to the dependants of your creature in order to control it later, then use add, or one of the methods described in section 4.3 below.  The most basic case uses the =add= method, like this:
+
+#+begin_src sclang
+	addBizz {
+		this add: { PinkNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup / 10 }.play;
+	}
+#+end_src
+
+** 4.3 Methods for registering and controlling 
+These methods premit to add synths and tasks and then stop them with other messages.  They only work on synths or tasks that have been added to the dependants of the creature with =add= or related methods (=addTask=, =addLoop=, =substitute=, =substituteTimed=). 
+
 *** add(<synth or playing task>)
 
 Add a synth or task. This does *not* stop previously running synths or tasks. If you want to stop previously running synths or tasks, call method =release=, or use method =substitute=, which stops previously running processes before addin the new process.
@@ -113,6 +169,7 @@ Shortcut for looping a function in a task and adding it. Instead of:
 #+begin_src sclang
 	day {
 		this add: Task({ loop { ().play; 1.wait } }).play;
+		1.wait;
 	}
 #+end_src
 
@@ -124,9 +181,9 @@ write:
 	}
 #+end_src
 
-** Add synths or tasks running for predefined duration
+*** Add synths or tasks running for predefined duration
 
-*** addTimed(<synth or task>, dur = 1, releaseTime ~ 0.05)
+**** addTimed(<synth or task>, dur = 1, releaseTime ~ 0.05)
 
 Shortcut to add a synth or task, and stop it after =dur= seconds, with release time =releaseTime=.
 
@@ -136,11 +193,11 @@ day {
 	}
 #+end_src
 
-** Substitute previously running processes with a new one
+*** Substitute previously running processes with a new one
 
 Stop all previously running processes, and then add a new process.
 
-*** substitute(<synth or task>, releaseTime = 0.05)
+**** substitute(<synth or task>, releaseTime = 0.05)
 
 #+begin_src sclang
 	day {
@@ -148,7 +205,7 @@ Stop all previously running processes, and then add a new process.
 	}
 #+end_src
 
-*** substituteTimed(<synth or task, dur = 1, releaseTime = 0.05 |)
+**** substituteTimed(<synth or task, dur = 1, releaseTime = 0.05 |)
 
 Stop all previously running processes, and then add a new process running for predefined duration =dur=.
 
@@ -159,7 +216,7 @@ Stop all previously running processes, and then add a new process running for pr
 #+end_src
 
 
-** Release(releaseTime = 0.05) (stop) all running synths and tasks
+*** Release(releaseTime = 0.05) (stop) all running synths and tasks
 
 Release (stop) all running synths and tasks with releaseTime as release time.
 
@@ -170,9 +227,9 @@ Release (stop) all running synths and tasks with releaseTime as release time.
 #+end_src
 
 
-** Set the parameters of synths
+*** Set the parameters of synths
 
-*** set(<parameter1>, <value1>, <parameter2>, <value2>)
+**** set(<parameter1>, <value1>, <parameter2>, <value2>)
 
 #+begin_src sclang
 	night {
@@ -180,12 +237,39 @@ Release (stop) all running synths and tasks with releaseTime as release time.
 	}
 #+end_src
 
-* 5. Recompile the library for changes to take effect.
 
-To load the code saved in Creature subclass definitions, you must recompile the ScClass Library.  The shortcut for this is Command (or Control)-shift-l.
+* 5. Start the piece 
 
-* 6. Start the piece 
+** Starting a simulation of the environment 
+
+Add some creatues to the environment and start a task that loops through given states with given timings:
 
 #+begin_src sclang
-SonicEnvironment.start;
+~task = EvoLab.play(
+	[Cricket], // creatures in your environment
+	[           // list of states and how long each one lasts
+		morning: 5,
+		day: 8,
+		noon: 3,
+		afternoon: 4,
+		evening: 3,
+		night: 5
+	],
+	5   // number of repetitions
+);
+
+** Stop the simulation loop task:
+
+#+begin_src sclang
+~task.stop;
 #+end_src
+
+** Stop all sounds on all creatures in the environment:
+
+#+begin_src sclang
+EvoLab release: 10;
+#+end_src
+
+* More info
+
+See further example files in folder: =ExampleCode= 
