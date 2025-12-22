@@ -43,5 +43,14 @@ Cricket.performAction(\tsk);
 //:Stop all sounds on all creatures in the environment:
 EvoLab release: 10;
 
-
+//:---- test some soft-coded states -----
+~task = EvoLab.play(
+	[Cricket], // creatures in your environment
+	[           // list of states and how long each one lasts
+		tsk: 0.15,
+		ping: 0.08,
+	],
+	15   // number of repetitions
+);
+//;
 
