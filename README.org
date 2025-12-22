@@ -270,6 +270,13 @@ Add some creatues to the environment and start a task that loops through given s
 EvoLab release: 10;
 #+end_src
 
+* 6. Submit your code and audio file in a repository.
+
+1. Create a repository on github
+2. Upload your Creature class code in the repository, as a file named =MyCreature.sc=, where =MyCreature= is the name of your creature.
+3. In the same repository, create a folder called =AudioFile=.
+4. In the =AudioFile= folder, put your audio file. It should be a single channel wav file, named like that: =mycreature.wav=.  Use lower case, start with an alphabetic character, and use only alphanumeric characters, for your audio file name. 
+
 * More info
 
 See further example files in folder: =ExampleCode= 
