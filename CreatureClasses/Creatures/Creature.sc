@@ -90,6 +90,7 @@ Creature {
 		if (this respondsTo: message) {
 			^this.perform(message, *args)
 		}{
+			currentEnvironment[~this = this];
 			^actions[message].value(*args);
 		}
 	}
@@ -148,7 +149,7 @@ Creature {
 		^this.audioFilesFolder +/+ this.fileName;
 	}
 
-	*audioFilesFolder { ^"~/CreaturesAudio/".standardizePath }
+	*audioFilesFolder { ^CreatureAudioFilesPath.path }
 	*fileName {
 		// subclasses can overrride here the name of the audio file to be loaded
 		^this.name.asString.toLower ++ ".wav";

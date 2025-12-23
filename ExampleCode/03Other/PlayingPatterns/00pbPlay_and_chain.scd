@@ -1,3 +1,6 @@
+// This file shows how to play patterns with a creature.
+// This is an advanced feature.  Approach it only after having
+// mastered the basics of Creature. 
 Creature.chain([\tsk]);
 Creature.chain(Pn(\tsk, 3));
 

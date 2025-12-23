@@ -4,6 +4,21 @@ How to use this folder and make your own Crature.
 
 * 1. Prepare your audio file(s) for loading.
 
+** 1.1.  Preparing the audio file for your own creature
+
+Your audio file should be a mono (1 channel) wav file.  Its name should be the same as your class name, *in lower case* and the extension should be =.wav=. For example, if your class is named =Cricket= then the audio file should be named =cricket.wav=. 
+
+Note: You can also tell your creature class to load another file by editing its fileName class method. For example:
+
+#+begin_src sclang
+	*fileName { // tell your creature to use file basssdrum.wav
+		// the file must be in the CreatureAudio folder, together with all other audio files.
+		^"bassdrum.wav";
+	}
+#+end_src
+
+Put your audio file in folder CreatureAudio in your own repository. 
+
 ** =~/CreaturesAudio/= is the folder for all audio files for the Creature project
 
 Your audio file and all audio files of all other creatures should be placed together in a folder named =CreaturesAudio=. The folder =CreaturesAudio= should be directly in your home folder like this: =~/CreaturesAudio/=.  You can download the CreatureAudio folder with the files collected by all project members from github, as explained in the next subsection.
@@ -11,19 +26,6 @@ Your audio file and all audio files of all other creatures should be placed toge
 ** 1.1. Cloning the folder with all audio files from github
 
 Clone the repository https://github.com/iani/CreatureAudio into your home folder. This repository contains the audio files for all creatures.  You should put your own audio file in side this folder.  It will be loaded by your creature class when the server boots.
-
-** 1.2.  Preparing the audio file for your own creature
-
-Your audio file should be a mono (1 channel) wav file.  Its name should be the same as your class name, *in lower case* and the extension should be =.wav=. For example, if your class is named =Cricket= then the audio file should be named =cricket.wav=.
-
-Note: You can also tell your creature class to load another file by editing its fileName class method. For example:
-
-#+begin_src sclang
-	,*fileName { // tell your creature to use file basssdrum.wav
-		// the file must be in the CreatureAudio folder, together with all other audio files.
-		^"bassdrum.wav";
-	}
-#+end_src
 
 * 2. Prepare your classes
 
