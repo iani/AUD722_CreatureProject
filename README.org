@@ -17,15 +17,11 @@ Note: You can also tell your creature class to load another file by editing its 
 	}
 #+end_src
 
-Put your audio file in folder CreatureAudio in your own repository. 
+*Put your audio file in folder CreatureAudio in your own repository.*
 
-** =~/CreaturesAudio/= is the folder for all audio files for the Creature project
+** 1.2 Creature Project Audio files folder
 
-Your audio file and all audio files of all other creatures should be placed together in a folder named =CreaturesAudio=. The folder =CreaturesAudio= should be directly in your home folder like this: =~/CreaturesAudio/=.  You can download the CreatureAudio folder with the files collected by all project members from github, as explained in the next subsection.
-
-** 1.1. Cloning the folder with all audio files from github
-
-Clone the repository https://github.com/iani/CreatureAudio into your home folder. This repository contains the audio files for all creatures.  You should put your own audio file in side this folder.  It will be loaded by your creature class when the server boots.
+The Creature class looks for audio files in the folder =CreatureAudioFiles= under the root directory of the AUD722_CreatureProject repository. This is where we put all audio files in order for them to be loaded by the Creature class when the server boots. 
 
 * 2. Prepare your classes
 
@@ -37,7 +33,9 @@ https://github.com/iani/AUD722_CreatureProject
 
 You can clone this with:
 
+#+begin_src shell
 git clone https://github.com/iani/AUD722_CreatureProject.git
+#+end_src
 
 Put the cloned repository in your SuperCollider Extensions folder.
 
