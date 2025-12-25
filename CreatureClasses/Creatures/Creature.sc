@@ -14,7 +14,7 @@ Creature {
 	classvar <>defaultBuffer;
 	classvar <>defaultFileName = "cricket.wav";
 
-	var <buffer, <>actions;
+	var <>buffer, <>actions;
 
 	*asInstance { ^this.default }
 	asInstance { ^this }
@@ -29,7 +29,7 @@ Creature {
 
 	*defaults { // lazily create defaults
 		defaults !? { ^defaults };
-		defaults = ();
+		defaults = (Creature: Creature.new);
 		Creature.allSubclasses do: { | c |
 			defaults.put(c.name, c.new)
 		};
