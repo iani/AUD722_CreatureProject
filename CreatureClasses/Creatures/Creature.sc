@@ -14,7 +14,7 @@ Creature {
 	classvar <>defaultBuffer;
 	classvar <>defaultFileName = "cricket.wav";
 
-	var <buffer, <>actions;
+	var <>buffer, <>actions;
 
 	*asInstance { ^this.default }
 	asInstance { ^this }
@@ -29,7 +29,7 @@ Creature {
 
 	*defaults { // lazily create defaults
 		defaults !? { ^defaults };
-		defaults = ();
+		defaults = (Creature: Creature.new);
 		Creature.allSubclasses do: { | c |
 			defaults.put(c.name, c.new)
 		};
@@ -90,6 +90,7 @@ Creature {
 		if (this respondsTo: message) {
 			^this.perform(message, *args)
 		}{
+			currentEnvironment[~this = this];
 			^actions[message].value(*args);
 		}
 	}
@@ -148,7 +149,7 @@ Creature {
 		^this.audioFilesFolder +/+ this.fileName;
 	}
 
-	*audioFilesFolder { ^"~/CreaturesAudio/".standardizePath }
+	*audioFilesFolder { ^CreatureAudioFilesPath.path }
 	*fileName {
 		// subclasses can overrride here the name of the audio file to be loaded
 		^this.name.asString.toLower ++ ".wav";

@@ -12,7 +12,13 @@ SynthController : SimpleController {
 		synth.register;
 		synth.isPlaying = true;
 		this.put(\release, { | model, change, releaseTime = 0.05 |
-			if (synth.isPlaying) { synth release: releaseTime; };
+			// postln("Release called on controller" + this;);
+			// postln("Synth" + synth + "is playing" + synth.isPlaying);
+			if (synth.isPlaying) {
+				// postln("RELEASING SYNTH:" + synth + "with time" + releaseTime);
+
+				synth release: releaseTime;
+			};
 			this.remove;
 		});
 		this.put(\set, { | model, change, args |
@@ -41,7 +47,10 @@ TaskController : SimpleController {
 }
 
 + Synth {
-	addModel { | model | ^SynthController(model, this); }
+	addModel { | model |
+		// postln("synth" + this + "adds model" + model);
+		^SynthController(model, this);
+	}
 	stopProcess { | releaseTime = 0.05 |
 		if (this.isPlaying) { this release: releaseTime }
 	}
