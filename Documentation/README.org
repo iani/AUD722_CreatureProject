@@ -1,0 +1,410 @@
+#+title: Creature Project Documentation
+
+This document provides instructions for students on how to install and use the Creature library for the AUD722 Computer Music course. It covers setting up the environment, using existing Creatures, and creating your own Creature subclasses.
+
+* Table of Contents
+- [[#introduction-and-overview][Introduction and Overview]]
+- [[#installation-and-setup][Installation and Setup]]
+  - [[#get-the-project-code][1. Get the Project Code]]
+  - [[#place-it-in-your-extensions-folder][2. Place it in your Extensions Folder]]
+  - [[#recompile-supercollider][3. Recompile SuperCollider]]
+  - [[#audio-files][4. Audio Files]]
+- [[#core-concepts][Core Concepts]]
+  - [[#creature][Creature]]
+  - [[#evolab][EvoLab]]
+- [[#how-to-use-the-library][How to Use the Library]]
+  - [[#running-a-simulation][Running a Simulation]]
+  - [[#interacting-with-a-creature-directly][Interacting with a Creature Directly]]
+- [[#creating-your-own-creature-subclass][Creating Your Own Creature Subclass]]
+  - [[#step-1-create-your-class-file][Step 1: Create Your Class File]]
+  - [[#step-2-prepare-your-audio-file][Step 2: Prepare Your Audio File]]
+  - [[#step-3-define-your-creatures-behavior][Step 3: Define Your Creature's Behavior]]
+  - [[#step-4-recompile-and-test][Step 4: Recompile and Test]]
+- [[#designing-creature-behavior-in-detail][Designing Creature Behavior in Detail]]
+  - [[#defining-states][Defining States]]
+  - [[#controlling-synths-and-tasks][Controlling Synths and Tasks]]
+    - [[#the-add-method][The 'add' Method]]
+    - [[#the-substitute-method][The 'substitute' Method]]
+    - [[#the-release-method][The 'release' Method]]
+    - [[#the-set-method][The 'set' Method]]
+  - [[#shortcut-methods][Shortcut Methods]]
+- [[#advanced-topics][Advanced Topics]]
+  - [[#adding-custom-actions][Adding Custom Actions]]
+  - [[#playing-patterns][Playing Patterns]]
+  - [[#custom-synthdefs][Custom SynthDefs]]
+- [[#directory-structure][Directory Structure]]
+
+* Introduction and Overview
+:PROPERTIES:
+:CUSTOM_ID: introduction-and-overview
+:END:
+
+* Installation and Setup
+:PROPERTIES:
+:CUSTOM_ID: installation-and-setup
+:END:
+
+Follow these steps to get the Creature library working in SuperCollider.
+
+** 1. Get the Project Code
+:PROPERTIES:
+:CUSTOM_ID: get-the-project-code
+:END:
+
+Clone the project repository from GitHub into a local folder on your computer.
+
+#+begin_src shell
+git clone https://github.com/iani/AUD722_CreatureProject.git
+#+end_src
+
+** 2. Place it in your Extensions Folder
+:PROPERTIES:
+:CUSTOM_ID: place-it-in-your-extensions-folder
+:END:
+
+The entire cloned folder, =AUD722_CreatureProject=, must be placed inside your SuperCollider Extensions folder. To find this folder, run the following command in SuperCollider:
+
+#+begin_src sclang
+Platform.userExtensionDir; // This will post the path to the console
+#+end_src
+
+** 3. Recompile SuperCollider
+:PROPERTIES:
+:CUSTOM_ID: recompile-supercollider
+:END:
+
+After moving the folder, you must recompile the SuperCollider class library. You can do this from the SuperCollider menu (Language -> Recompile Class Library) or by using the keyboard shortcut *Ctrl+Shift+L* (Windows/Linux) or *Cmd+Shift+L* (macOS).
+
+You must recompile *every time* you make a change to a class file (.sc file in the =CreatureClasses= directory).
+
+** 4. Audio Files
+:PROPERTIES:
+:CUSTOM_ID: audio-files
+:END:
+
+The library automatically loads audio files for each Creature class.
+- All audio files should be placed in the =CreatureAudioFiles= directory.
+- By default, a class named =MyCreature= will look for an audio file named =mycreature.wav=.
+- The audio file should be a *mono (1-channel) WAV file*.
+
+If you want to use a different file name, you can override the =*fileName= class method in your Creature subclass:
+#+begin_src sclang
+*fileName {
+    // This tells the class to load "special.wav" instead of "mycreature.wav"
+    ^"special.wav";
+}
+#+end_src
+
+
+
+* Core Concepts
+:PROPERTIES:
+:CUSTOM_ID: core-concepts
+:END:
+
+*** Creature
+:PROPERTIES:
+:CUSTOM_ID: creature
+:END:
+A =Creature= is a SuperCollider class that represents an autonomous sonic agent. It has a set of behaviors (called "states" or "actions") that define how it produces sound. Each Creature can have its own audio buffer and custom sound-making logic.
+
+*** EvoLab
+:PROPERTIES:
+:CUSTOM_ID: evolab
+:END:
+=EvoLab= is the environment where Creatures live. It manages a collection of Creatures and cycles through different environmental states, such as =dawn=, =day=, =dusk=, and =night=. When the EvoLab changes state, it triggers the corresponding state method in each Creature it manages.
+
+* How to Use the Library
+:PROPERTIES:
+:CUSTOM_ID: how-to-use-the-library
+:END:
+
+** Running a Simulation
+:PROPERTIES:
+:CUSTOM_ID: running-a-simulation
+:END:
+
+The primary way to use the library is to run a simulation with =EvoLab=.
+
+#+begin_src sclang
+// 1. Boot the server (if you haven't already)
+s.boot;
+
+// 2. Define which creatures are in the environment
+~creatures = [Cricket, Girl, Emro]; // Use the class names
+
+// 3. Define the sequence of states and their durations in seconds
+~states = [
+    dawn: 10,
+    day: 15,
+    dusk: 10,
+    night: 20
+];
+
+// 4. Start the simulation, repeating the cycle 5 times
+~simulation = EvoLab.play(~creatures, ~states, 5);
+
+// 5. To stop the simulation task
+~simulation.stop;
+
+// 6. To stop all sounds from all creatures gracefully
+EvoLab.release(5); // Release over 5 seconds
+#+end_src
+
+** Interacting with a Creature Directly
+:PROPERTIES:
+:CUSTOM_ID: interacting-with-a-creature-directly
+:END:
+
+You can also trigger the states of a single Creature instance manually.
+
+#+begin_src sclang
+// Trigger the 'day' state of the default Cricket instance
+Cricket.day;
+
+// Wait a bit, then trigger the 'night' state
+4.wait;
+Cricket.night;
+
+// Stop all sounds from the Cricket instance
+Cricket.release;
+#+end_src
+
+* Creating Your Own Creature Subclass
+:PROPERTIES:
+:CUSTOM_ID: creating-your-own-creature-subclass
+:END:
+
+This is the core creative task of the project.
+
+** Step 1: Create Your Class File
+:PROPERTIES:
+:CUSTOM_ID: step-1-create-your-class-file
+:END:
+
+1.  Create a new file for your creature, e.g., =MyCreature.sc=.
+2.  Place this file within the project, for example, in =CreatureClasses/Creatures/ContributedCreatures/=.
+3.  Define your class as a subclass of =Creature=.
+
+#+begin_src sclang
+MyCreature : Creature {
+    // Your custom methods and logic will go here
+}
+#+end_src
+
+** Step 2: Prepare Your Audio File
+:PROPERTIES:
+:CUSTOM_ID: step-2-prepare-your-audio-file
+:END:
+
+1.  Create a mono WAV file named =mycreature.wav= (all lowercase).
+2.  Place it in the =CreatureAudioFiles= directory.
+
+** Step 3: Define Your Creature's Behavior
+:PROPERTIES:
+:CUSTOM_ID: step-3-define-your-creatures-behavior
+:END:
+
+The behavior of your creature is defined by the methods you add to its class. These methods, often corresponding to EvoLab states (=dawn=, =day=, etc.), are where you will generate sound.
+
+#+begin_src sclang
+MyCreature : Creature {
+    // This method is called when the EvoLab enters the 'day' state
+    day {
+        // This is a simple example that plays a sound.
+        // See the next section for details on 'substitute'.
+        this.substitute({
+            // Play the creature's buffer with a grain cloud
+            var sig = GrainBuf.ar(
+                numChannels: 2,
+                trigger: Impulse.ar(10),
+                dur: 0.2,
+                sndbuf: this.buffer,
+                rate: 1,
+                pos: LFNoise1.kr(0.2).range(0, 1),
+                interp: 4,
+                pan: LFNoise2.kr(0.3),
+                envbufnum: -1,
+                maxGrains: 512
+            );
+            sig * 0.3;
+        }.play);
+    }
+
+    // This method is called for the 'night' state
+    night {
+        // Release all sounds over 10 seconds
+        this.release(10);
+    }
+}
+#+end_src
+
+** Step 4: Recompile and Test
+:PROPERTIES:
+:CUSTOM_ID: step-4-recompile-and-test
+:END:
+
+1.  Save your class file.
+2.  Recompile the SuperCollider class library (*Cmd/Ctrl+Shift+L*).
+3.  Test your new creature in an =EvoLab= simulation or by calling its methods directly.
+
+* Designing Creature Behavior in Detail
+:PROPERTIES:
+:CUSTOM_ID: designing-creature-behavior-in-detail
+:END:
+
+** Defining States
+:PROPERTIES:
+:CUSTOM_ID: defining-states
+:END:
+
+The most common methods to implement are the states used by =EvoLab=:
+- =dawn=
+- =day=
+- =dusk=
+- =night=
+- =danger=
+
+When =EvoLab.play= transitions to one of these states, it calls the corresponding method on every creature in the simulation.
+
+** Controlling Synths and Tasks
+:PROPERTIES:
+:CUSTOM_ID: controlling-synths-and-tasks
+:END:
+
+To create dynamic behaviors, you need to manage the synths and tasks your creature starts. The =Creature= superclass provides methods to handle this. For these methods to work, you *must* register the synth or task with your creature instance.
+
+*** The 'add' Method
+:PROPERTIES:
+:CUSTOM_ID: the-add-method
+:END:
+=add= is the fundamental method for registering a process (a running Synth or Task) with the creature. This allows the creature to control it later (e.g., stop it or change its parameters).
+
+#+begin_src sclang
+// GOOD: The synth is registered and can be released later.
+this add: { SinOsc.ar(440, 0, 0.1).dup }.play;
+
+// BAD: The synth is "fire-and-forget". The creature doesn't know about it.
+{ SinOsc.ar(440, 0, 0.1).dup }.play;
+#+end_src
+
+*** The 'substitute' Method
+:PROPERTIES:
+:CUSTOM_ID: the-substitute-method
+:END:
+=substitute(process, releaseTime)= is one of the most useful methods. It stops all previously registered processes and adds a new one. This is perfect for state changes.
+
+#+begin_src sclang
+day {
+    // Stop whatever was playing before (e.g., the 'dawn' sound)
+    // and start a new WhiteNoise synth.
+    this.substitute({ WhiteNoise.ar(0.1).dup }.play, releaseTime: 2);
+}
+#+end_src
+
+*** The 'release' Method
+:PROPERTIES:
+:CUSTOM_ID: the-release-method
+:END:
+=release(releaseTime)= stops all processes currently registered with the creature.
+
+#+begin_src sclang
+night {
+    // Fade out all sounds over 8 seconds.
+    this.release(8);
+}
+#+end_src
+
+*** The 'set' Method
+:PROPERTIES:
+:CUSTOM_ID: the-set-method
+:END:
+=set("param", value, \param2, value2, ...)= sends a =/n_set= message to all registered synths. This allows you to modify the sound of running synths.
+
+#+begin_src sclang
+var synth;
+// In the 'day' state, create a synth with a controllable frequency
+day {
+    synth = { SinOsc.ar(req.kr(440), 0, 0.2).dup }.play;
+    this.add(synth);
+}
+
+// In the 'dusk' state, change the frequency of the running synth
+dusk {
+    this.set(req, 220);
+}
+#+end_src
+
+** Shortcut Methods
+:PROPERTIES:
+:CUSTOM_ID: shortcut-methods
+:END:
+
+The =Creature= class provides several helpful shortcuts:
+
+- =addTask(function)=
+- =addLoop(function)=
+- =addTimed(process, dur, releaseTime)=
+- =substituteTimed(process, dur, releaseTime)=
+
+* Advanced Topics
+:PROPERTIES:
+:CUSTOM_ID: advanced-topics
+:END:
+
+** Adding Custom Actions
+:PROPERTIES:
+:CUSTOM_ID: adding-custom-actions
+:END:
+
+You can add temporary, named behaviors to a Creature instance using =addActions=. This is great for prototyping without recompiling.
+
+#+begin_src sclang
+Cricket.addActions(
+    buzz: {
+        // The sound of the action
+        { PinkNoise.ar(Env.perc(0.01, 0.1).kr(2)).dup * 0.1 }.play;
+        0.2; // The duration of the action (important for chaining)
+    }
+);
+
+// Now you can play this action
+Cricket.perform(uzz);
+#+end_src
+
+** Playing Patterns
+:PROPERTIES:
+:CUSTOM_ID: playing-patterns
+:END:
+
+The =play=, =pb=, and =chain= methods allow you to play sequences of actions using SuperCollider's Pattern library. This is an advanced feature for creating complex, timed sequences.
+
+#+begin_src sclang
+// Play a sequence of default actions
+Cricket.play(
+    actions: Pseq([
+        \ping, \tsk, \ping, \ping, \tsk
+    ], inf),
+    durations: 0.25
+);
+#+end_src
+
+** Custom SynthDefs
+:PROPERTIES:
+:CUSTOM_ID: custom-synthdefs
+:END:
+
+You can add your own =SynthDef= files to the =CreatureClasses/Creatures/CreatureSynthDefs= folder. Any =.scd= or =.sc= file in this directory containing a SynthDef will be automatically built and loaded when SuperCollider boots.
+
+* Directory Structure
+:PROPERTIES:
+:CUSTOM_ID: directory-structure
+:END:
+
+- =CreatureClasses/=: Core source code for the library.
+  - =Creatures/=: Base =Creature= class and contributed subclasses.
+  - =Controllers/=: Code for managing creature processes.
+  - =Environment/=: The =EvoLab= class.
+- =CreatureAudioFiles/=: *Place all your .wav files here.*
+- =ExampleCode/=: Various examples showing how to use the library.
+- =Documentation/=: This file.

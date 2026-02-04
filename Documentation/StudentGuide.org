@@ -1,0 +1,411 @@
+#+title: Creature Project – Student Guide
+#+author: AUD722 – Computer Music
+
+* Purpose of this document
+
+This guide explains, step by step, how you (as a student in AUD722) can:
+
+1. Install and enable the Creature library in SuperCollider.
+2. Create your own Creature class and connect it to an audio file.
+3. Design the Creature’s behaviour using states like =dawn=, =day=, =night=, etc.
+4. Run your Creature inside the =EvoLab= (environment lab) simulation.
+
+Throughout the guide, “EnvLab” / “environment lab” refers to the =EvoLab= class in this project.
+
+* 1. Installation and setup
+
+** 1.1. Get the project code
+
+Clone the project from GitHub:
+
+#+begin_src shell
+git clone https://github.com/iani/AUD722_CreatureProject.git
+#+end_src
+
+This will create a folder called =AUD722_CreatureProject=.
+
+** 1.2. Put it in your SuperCollider Extensions folder
+
+SuperCollider only sees class files (=.sc=) that live in specific folders.
+
+1. In SuperCollider, run:
+
+   #+begin_src sclang
+   Platform.userExtensionDir;
+   #+end_src
+
+   The path it prints is your *user Extensions* folder.
+
+2. Move (or clone directly) the entire =AUD722_CreatureProject= folder into that Extensions folder, so the structure looks like:
+
+   - =.../Extensions/AUD722_CreatureProject/CreatureClasses/...=
+   - =.../Extensions/AUD722_CreatureProject/CreatureAudioFiles/...=
+   - etc.
+
+** 1.3. Recompile the SuperCollider class library
+
+Any time you add or edit a =.sc= class file, you must recompile:
+
+- Menu: =Language → Recompile Class Library=
+- Or keyboard:
+  - macOS: =Cmd+Shift+L=
+  - Windows/Linux: =Ctrl+Shift+L=
+
+Do this now so that the =Creature= and =EvoLab= classes become available.
+
+** 1.4. Audio files
+
+All Creatures in this project are associated with a *mono WAV* file.
+
+- All audio files for this project live in =CreatureAudioFiles/=.
+- If your class is called =MyCreature=, by default it will try to load:
+
+  - =CreatureAudioFiles/mycreature.wav= (all lowercase, =.wav= extension)
+  - The file must be mono (1 channel).
+
+If you want a different file name, override the =*fileName= class method in your Creature:
+
+#+begin_src sclang
+MyCreature : Creature {
+
+    *fileName {
+        // MUST be a file in CreatureAudioFiles
+        ^"special.wav";
+    }
+
+    // ...other methods...
+}
+#+end_src
+
+* 2. Core concepts
+
+** 2.1. Creature
+
+=Creature= is a base class that all your creatures inherit from. It handles:
+
+- Loading the audio buffer associated with your class.
+- Providing utility methods like:
+  - =add=, =addTask=, =addLoop=, =addTimed=
+  - =substitute=, =substituteTimed=
+  - =set=, =release=
+- Managing “actions” and patterns.
+
+Your own class:
+
+#+begin_src sclang
+MyCreature : Creature {
+    // define methods here, such as dawn, day, dusk, night, danger...
+}
+#+end_src
+
+** 2.2. EvoLab (environment lab)
+
+=EvoLab= is the “environment” that hosts multiple Creatures and cycles through states.
+
+- You give it:
+  - A list of Creature *classes* (e.g. =[Cricket, Girl, Emro]=).
+  - A list of states with durations, e.g.:
+
+    #+begin_src sclang
+    [
+        dawn: 10,  // 10 seconds in 'dawn'
+        day:  15,
+        dusk: 10,
+        night: 20
+    ]
+    #+end_src
+
+- When EvoLab enters a state (e.g. =day=), it sends that message to each creature:
+  - =MyCreature.day;=
+  - =Cricket.day;=, etc.
+
+* 3. Quick start: run an existing simulation
+
+1. Boot the server:
+
+   #+begin_src sclang
+   s.boot;
+   #+end_src
+
+2. Choose some existing Creatures, for example:
+
+   #+begin_src sclang
+   ~creatures = [Cricket, Emro]; // use the class names, not strings
+   #+end_src
+
+3. Define the environment states and durations:
+
+   #+begin_src sclang
+   ~states = [
+       dawn: 10,
+       day:  15,
+       dusk: 10,
+       night: 20
+   ];
+   #+end_src
+
+4. Start the EvoLab simulation:
+
+   #+begin_src sclang
+   ~sim = EvoLab.play(~creatures, ~states, 5); // repeat cycle 5 times
+   #+end_src
+
+5. Stop the simulation task (the pattern):
+
+   #+begin_src sclang
+   ~sim.stop;
+   #+end_src
+
+6. Gracefully stop all sounds from all creatures:
+
+   #+begin_src sclang
+   EvoLab.release(5);  // fade out over 5 seconds
+   #+end_src
+
+Once this works, you are ready to plug in your own Creature.
+
+* 4. Building your own Creature (step by step)
+
+This is the main creative goal of the project: design a new sonic “creature” and run it in the environment.
+
+** Step 1 – Prepare your audio file
+
+1. Choose or record a sound that will be the raw material for your creature.
+2. Convert/export it to a *mono WAV* file.
+3. Name it after your class, in lowercase, e.g.:
+   - Class name: =MyCreature=
+   - File name: =mycreature.wav=
+4. Place it in the project’s =CreatureAudioFiles/= directory.
+
+If you must use a different file name, override =*fileName= as shown earlier.
+
+** Step 2 – Create your class file
+
+1. Decide on a class name, e.g. =MyCreature=.
+2. Create a new file called =MyCreature.sc=.
+3. Place it somewhere inside the project’s =CreatureClasses/Creatures/= hierarchy, for example:
+
+   - =CreatureClasses/Creatures/ContributedCreatures/MyCreature.sc=
+
+4. Define your class as a subclass of =Creature=:
+
+   #+begin_src sclang
+   MyCreature : Creature {
+
+       // This method will be called for the 'day' state
+       day {
+           "MyCreature: day".postln;
+           // Sound code will go here
+       }
+
+       // This method will be called for the 'night' state
+       night {
+           "MyCreature: night".postln;
+           // Stop or change sound here
+       }
+   }
+   #+end_src
+
+5. Save the file and recompile the class library (=Cmd/Ctrl+Shift+L=).
+
+If the compile fails, check the post window for syntax errors.
+
+** Step 3 – Define behaviour for environment states
+
+EvoLab will call methods on your creature that match its state names. Common states used in this project include:
+
+- =dawn=
+- =morning=
+- =day=
+- =noon=
+- =afternoon=
+- =evening=
+- =night=
+- (optionally) =danger=, or any other custom states you want to drive manually.
+
+Example minimal implementation:
+
+#+begin_src sclang
+MyCreature : Creature {
+
+    dawn {
+        // simple noise wash in the morning
+        this.substitute({
+            { PinkNoise.ar(0.05 ! 2) * Env.perc(0.1, 5).kr(2) }.play
+        }, releaseTime: 2);
+    }
+
+    day {
+        // grainy playback of the buffer
+        this.substitute({
+            var sig = GrainBuf.ar(
+                numChannels: 2,
+                trigger: Impulse.ar(10),
+                dur: 0.1,
+                sndbuf: this.buffer,
+                rate: 1,
+                pos: LFNoise1.kr(0.2).range(0, 1),
+                interp: 4,
+                pan: LFNoise2.kr(0.5),
+                maxGrains: 256
+            );
+            sig * 0.3;
+        }.play, releaseTime: 2);
+    }
+
+    night {
+        // fade everything out slowly
+        this.release(10);
+    }
+}
+#+end_src
+
+Key idea: each state method should either *start* a new process or *change/stop* existing ones in a musically meaningful way.
+
+** Step 4 – Use Creature’s process-control helpers
+
+When you create synths or tasks inside your states, register them with the creature so they can be controlled later.
+
+*** =add=
+
+Registers a process (Synth or Task) with the creature so =release= and =set= work.
+
+#+begin_src sclang
+day {
+    this.add(
+        { SinOsc.ar(LFNoise1.kr(2).range(200, 1000), 0, 0.1).dup }.play
+    );
+}
+#+end_src
+
+*** =substitute=
+
+Stops all previously registered processes (with a fade) and adds a new one. Perfect for state changes.
+
+#+begin_src sclang
+evening {
+    this.substitute(
+        { LPF.ar(WhiteNoise.ar(0.1 ! 2), 1000) }.play,
+        releaseTime: 3
+    );
+}
+#+end_src
+
+*** =release=
+
+Stops all registered processes over the given time.
+
+#+begin_src sclang
+night {
+    this.release(8);  // 8-second fade out
+}
+#+end_src
+
+*** =addTask= and =addLoop=
+
+Helpers for working with =Task=:
+
+#+begin_src sclang
+// Looping pattern of events
+afternoon {
+    this.addLoop({
+        (degree: [-12, 0, 7].choose, dur: [0.25, 0.5, 1].choose).play;
+        0.25.wait;
+    });
+}
+#+end_src
+
+** Step 5 – Test your creature directly
+
+Before using EvoLab, test your creature by calling its methods on the default instance:
+
+#+begin_src sclang
+// Recompile the class library first
+s.boot;
+
+// Trigger a state directly
+MyCreature.day;
+
+// Later, change to night
+MyCreature.night;
+
+// Stop everything
+MyCreature.release(5);
+#+end_src
+
+If you hear something and no errors appear, you are ready to integrate with EvoLab.
+
+* 5. Running your creature in EvoLab (EnvLab)
+
+Now that your creature exists and makes sound, the final step is to run it in the environment simulation.
+
+** 5.1. Basic EvoLab script
+
+#+begin_src sclang
+s.boot;
+
+// 1. Choose which creatures to include
+~creatures = [MyCreature, Cricket];  // add yours alongside others
+
+// 2. Define the environment states and durations (in seconds)
+~states = [
+    dawn:      10,
+    morning:   15,
+    day:       20,
+    afternoon: 15,
+    evening:   10,
+    night:     25
+];
+
+// 3. Start the simulation, repeating the whole cycle 3 times
+~sim = EvoLab.play(~creatures, ~states, 3);
+
+// 4. To stop the simulation task (pattern)
+~sim.stop;
+
+// 5. To stop all sound from all creatures with a fade-out
+EvoLab.release(8);
+#+end_src
+
+EvoLab will automatically call the methods with the matching names on each creature as it steps through the states.
+
+** 5.2. Checklist if something is silent or broken
+
+- Did you:
+  - Put the project folder into your SuperCollider Extensions folder?
+  - Recompile the class library after creating or editing your =.sc= file?
+  - Name your class and audio file correctly (e.g. =MyCreature= / =mycreature.wav=)?
+  - Implement methods that match the states you are asking EvoLab to use (e.g. you use =afternoon= in ~=states= but forgot to define =afternoon= in your class)?
+- Did SuperCollider show any red error messages in the post window when recompiling or running states?
+- Is your audio file mono, and does it actually play if you test with:
+
+  #+begin_src sclang
+  MyCreature.bufferPlay;
+  #+end_src
+
+* 6. Submitting your project
+
+For the course, typical submission requirements are:
+
+1. A GitHub repository containing:
+   - Your Creature class file, e.g. =MyCreature.sc=.
+   - A folder (e.g. =AudioFile/= or similar) containing your mono WAV file (named consistently with your class or as documented in your =*fileName= method).
+2. A short text (in the repo README or separate file) describing:
+   - The concept of your creature.
+   - How its behaviour changes across environment states (dawn/day/evening/night, etc.).
+   - Any special controls or parameters you designed.
+3. An example SuperCollider script showing how to:
+   - Boot the server.
+   - Run EvoLab with your creature.
+   - Stop/release everything.
+
+* 7. Where to look for more examples
+
+- =CreatureClasses/Creatures/ExampleCreatures/ExampleCreature.sc=
+- =CreatureClasses/Creatures/ExampleCreatures/Cricket.sc=
+- =CreatureClasses/Creatures/ContributedCreatures/EmRovithis/Emro.sc=
+- =ExampleCode/= (various test pieces and pattern examples)
+- =CreatureClasses/Creatures/CreatureSynthDefs/= for custom SynthDefs
+
+Study these files to see different design styles for creatures and how they use the helper methods from =Creature=.
+

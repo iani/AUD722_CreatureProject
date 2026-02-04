@@ -1,0 +1,9 @@
+
+* Which states are used in the simulation.
+
+- dawn
+- day
+- dusk
+- night
+- danger
+

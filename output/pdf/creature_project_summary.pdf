@@ -1,0 +1,83 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 3344 >>
+stream
+BT /F2 18 Tf 54 738 Td (AUD722 Creature Project - App Summary) Tj ET
+BT /F2 12 Tf 54 714 Td (What it is) Tj ET
+BT /F1 11 Tf 54 698 Td (A SuperCollider class library for the AUD722 Computer Music course that lets you build) Tj ET
+BT /F1 11 Tf 54 684 Td (autonomous sonic creatures from audio buffers and behaviors. It also provides an environment to) Tj ET
+BT /F1 11 Tf 54 670 Td (run groups of creatures through timed state cycles.) Tj ET
+BT /F2 12 Tf 54 654 Td (Who its for) Tj ET
+BT /F1 11 Tf 54 638 Td (AUD722 Computer Music students and SuperCollider users who want to design and run creature-like) Tj ET
+BT /F1 11 Tf 54 624 Td (sound agents.) Tj ET
+BT /F2 12 Tf 54 608 Td (What it does) Tj ET
+BT /F1 11 Tf 66 592 Td (-) Tj ET
+BT /F1 11 Tf 76 592 Td (Defines a Creature base class with default actions and action dispatch.) Tj ET
+BT /F1 11 Tf 66 578 Td (-) Tj ET
+BT /F1 11 Tf 76 578 Td (Auto-loads per-creature audio buffers from the CreatureAudioFiles folder on server boot.) Tj ET
+BT /F1 11 Tf 66 564 Td (-) Tj ET
+BT /F1 11 Tf 76 564 Td (Supports adding or overriding actions via addActions or subclass methods.) Tj ET
+BT /F1 11 Tf 66 550 Td (-) Tj ET
+BT /F1 11 Tf 76 550 Td (Provides the EvoLab environment to cycle states and durations via patterns.) Tj ET
+BT /F1 11 Tf 66 536 Td (-) Tj ET
+BT /F1 11 Tf 76 536 Td (Loads shared synthdefs from CreatureSynthDefs on server boot.) Tj ET
+BT /F1 11 Tf 66 522 Td (-) Tj ET
+BT /F1 11 Tf 76 522 Td (Includes example creature subclasses and usage examples in the repo.) Tj ET
+BT /F1 11 Tf 66 508 Td (-) Tj ET
+BT /F1 11 Tf 76 508 Td (Offers lifecycle control for synths and tasks via add, substitute, and release.) Tj ET
+BT /F2 12 Tf 54 492 Td (How it works \(architecture\)) Tj ET
+BT /F1 11 Tf 66 476 Td (-) Tj ET
+BT /F1 11 Tf 76 476 Td (Components: Creature \(base class\), EvoLab \(environment\), CreatureSynthDefs \(synthdef) Tj ET
+BT /F1 11 Tf 76 462 Td (loader\), CreatureAudioFiles \(audio assets\).) Tj ET
+BT /F1 11 Tf 66 448 Td (-) Tj ET
+BT /F1 11 Tf 76 448 Td (Startup flow: on server boot, Creature adds synthdefs and loads buffers for all Creature) Tj ET
+BT /F1 11 Tf 76 434 Td (subclasses.) Tj ET
+BT /F1 11 Tf 66 420 Td (-) Tj ET
+BT /F1 11 Tf 76 420 Td (Runtime flow: EvoLab.play builds a pattern over states and durations, then calls each) Tj ET
+BT /F1 11 Tf 76 406 Td (creature's performAction for the current state.) Tj ET
+BT /F1 11 Tf 66 392 Td (-) Tj ET
+BT /F1 11 Tf 76 392 Td (Action execution: performAction runs a matching method or an action function that creates) Tj ET
+BT /F1 11 Tf 76 378 Td (synths or tasks using buffers and synthdefs.) Tj ET
+BT /F2 12 Tf 54 362 Td (How to run \(minimal\)) Tj ET
+BT /F1 11 Tf 66 346 Td (-) Tj ET
+BT /F1 11 Tf 76 346 Td (Clone the repo and place the AUD722_CreatureProject folder in your SuperCollider Extensions) Tj ET
+BT /F1 11 Tf 76 332 Td (directory.) Tj ET
+BT /F1 11 Tf 66 318 Td (-) Tj ET
+BT /F1 11 Tf 76 318 Td (Recompile the SuperCollider class library.) Tj ET
+BT /F1 11 Tf 66 304 Td (-) Tj ET
+BT /F1 11 Tf 76 304 Td (Boot the server in SuperCollider: s.boot.) Tj ET
+BT /F1 11 Tf 66 290 Td (-) Tj ET
+BT /F1 11 Tf 76 290 Td (Define the creature classes and the state-duration list.) Tj ET
+BT /F1 11 Tf 66 276 Td (-) Tj ET
+BT /F1 11 Tf 76 276 Td (Start the simulation with EvoLab.play\(...\); stop with EvoLab.release\(...\).) Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+3792
+%%EOF

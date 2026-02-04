@@ -5,12 +5,10 @@ Minimal example of a Creature class.
 States to be implemented are:
 
 dawn
-morning
 day
-noon
-afternoon
-evening
+dusk
 night
+danger
 
 */
 

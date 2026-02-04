@@ -1,0 +1,73 @@
+These methods can be used to control your synths and tasks
+
+For a synth or task to be controlled by these methods it must be
+added together with a controller to your creature.
+This is done by method add and its variants.
+
+* Adding synths and tasks.
+
+You should add each synth and each task individually.
+
+Synth:
+this add: { .... }.play;
+
+Task:
+this add: Task({ ..... }).play;
+
+
+Shortcut for tasks:
+
+addTask
+
+Shortcut for loops:
+
+addLoop
+
+Shortcuts for keeping short synths and tasks:
+
+addTimed
+
+* Substitute
+
+* Basic methods
+
+** add
+
+Adds a controller to a Synth or Task as dependant to your creature, so that it can listen to commands such as set and release. 
+
+Explanation / Example 
+
+For method dawn, instead of:
+
+dawn {
+        { SinOsc.ar(400, 0, 0.1).dup }.play
+}
+
+write:
+
+dawn {
+      this add: { SinOsc.ar(400, 0, 0.1).dup }.play
+}
+
+Because:
+you can use set to change parameters
+you can use release to stop the synth.
+
+** set
+
+** release  
+
+
+* Advanced (shortcut) methods
+
+** substitute
+
+Stop all previous synths and tasks from your creature, and add a new synth or task. 
+
+** addTimed
+
+** substituteTimed 
+
+** addLoop
+
+** addTask
