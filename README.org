@@ -2,6 +2,8 @@
 
 * How this Library works
 
+The Creature library boots with the SuperCollider server, loads synthdefs, and loads audio buffers for all Creature subclasses. When you trigger a state (e.g., =day=), the creature performs a matching method or an action function defined in its actions dictionary. If a Creature's audio file is missing, it falls back to the default buffer (=cricket.wav=).
+
 * How to use this folder and make your own Creature.
 
 ** 1. Prepare your audio file(s) for loading.
@@ -14,16 +16,16 @@ Note: You can also tell your creature class to load another file by editing its 
 
 #+begin_src sclang
 	*fileName { // tell your creature to use file basssdrum.wav
-		// the file must be in the CreatureAudio folder, together with all other audio files.
+		// the file must be in the CreatureAudioFiles folder, together with all other audio files.
 		^"bassdrum.wav";
 	}
 #+end_src
 
-*Put your audio file in folder CreatureAudio in your own repository.*
+*Put your audio file in folder CreatureAudioFiles in your own repository.*
 
 *** 1.2 Creature Project Audio files folder
 
-The Creature class looks for audio files in the folder =CreatureAudioFiles= under the root directory of the AUD722_CreatureProject repository. This is where we put all audio files in order for them to be loaded by the Creature class when the server boots. 
+The Creature class looks for audio files in the folder =CreatureAudioFiles= under the root directory of the AUD722_CreatureProject repository. This is where we put all audio files in order for them to be loaded by the Creature class when the server boots. If a Creature's file is missing, it will use the default buffer (=cricket.wav=).
 
 ** 2. Prepare your classes
 

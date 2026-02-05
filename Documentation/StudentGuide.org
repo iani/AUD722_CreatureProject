@@ -62,6 +62,7 @@ All Creatures in this project are associated with a *mono WAV* file.
 
   - =CreatureAudioFiles/mycreature.wav= (all lowercase, =.wav= extension)
   - The file must be mono (1 channel).
+  - If the file is missing, the Creature will use the default buffer (=cricket.wav=).
 
 If you want a different file name, override the =*fileName= class method in your Creature:
 
@@ -118,6 +119,10 @@ MyCreature : Creature {
 - When EvoLab enters a state (e.g. =day=), it sends that message to each creature:
   - =MyCreature.day;=
   - =Cricket.day;=, etc.
+
+** 2.3. CreatureSynthDefs (synthdef loader)
+
+=CreatureSynthDefs= automatically loads any =.scd= synthdef files in the =CreatureClasses/Creatures/CreatureSynthDefs/= folder when the server boots. This is the shared place to put synthdefs used by multiple creatures.
 
 * 3. Quick start: run an existing simulation
 
@@ -312,6 +317,20 @@ afternoon {
 }
 #+end_src
 
+*** =addTimed=
+
+Adds a synth or task and automatically stops it after a duration.
+
+#+begin_src sclang
+burst {
+    this.addTimed(
+        { SinOsc.ar(600, 0, 0.08).dup }.play,
+        dur: 2,
+        releaseTime: 1
+    );
+}
+#+end_src
+
 ** Step 5 – Test your creature directly
 
 Before using EvoLab, test your creature by calling its methods on the default instance:
@@ -398,9 +417,9 @@ For the course, typical submission requirements are:
 
 - =CreatureClasses/Creatures/ExampleCreatures/ExampleCreature.sc=
 - =CreatureClasses/Creatures/ExampleCreatures/Cricket.sc=
+- =CreatureClasses/Creatures/CreatureSynthDefs/CreatureSynthDefs.sc= (auto-loads synthdefs from that folder at server boot)
 - =CreatureClasses/Creatures/ContributedCreatures/EmRovithis/Emro.sc=
 - =ExampleCode/= (various test pieces and pattern examples)
 - =CreatureClasses/Creatures/CreatureSynthDefs/= for custom SynthDefs
 
 Study these files to see different design styles for creatures and how they use the helper methods from =Creature=.
-
