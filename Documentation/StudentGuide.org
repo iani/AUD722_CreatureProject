@@ -215,11 +215,8 @@ If the compile fails, check the post window for syntax errors.
 EvoLab will call methods on your creature that match its state names. Common states used in this project include:
 
 - =dawn=
-- =morning=
 - =day=
-- =noon=
-- =afternoon=
-- =evening=
+- =dusk=
 - =night=
 - (optionally) =danger=, or any other custom states you want to drive manually.
 
@@ -350,10 +347,8 @@ s.boot;
 // 2. Define the environment states and durations (in seconds)
 ~states = [
     dawn:      10,
-    morning:   15,
     day:       20,
-    afternoon: 15,
-    evening:   10,
+    dusk:      10,
     night:     25
 ];
 
@@ -374,7 +369,7 @@ EvoLab will automatically call the methods with the matching names on each creat
 - Did you:
   - Put the project folder into your SuperCollider Extensions folder?
   - Recompile the class library after creating or editing your =.sc= file?
-  - Name your class and audio file correctly (e.g. =MyCreature= / =mycreature.wav=)?
+  - Name your class and audio file correctly (e.g. =MyCreature= / =mycreature.wav=)?  Give them an original name after the type of living creature that you are modeling, e.g. =FireFly=, =
   - Implement methods that match the states you are asking EvoLab to use (e.g. you use =afternoon= in ~=states= but forgot to define =afternoon= in your class)?
 - Did SuperCollider show any red error messages in the post window when recompiling or running states?
 - Is your audio file mono, and does it actually play if you test with:
@@ -388,7 +383,7 @@ EvoLab will automatically call the methods with the matching names on each creat
 For the course, typical submission requirements are:
 
 1. A GitHub repository containing:
-   - Your Creature class file, e.g. =MyCreature.sc=.
+   - Your Creature class file. Give an original name to your class name and file name, e.g. =FireFly=, =FireFly.sc=. =Starling=, =Starling.sc=, =Blackbird=, =Blackbird.sc=, etc.
    - A folder (e.g. =AudioFile/= or similar) containing your mono WAV file (named consistently with your class or as documented in your =*fileName= method).
 2. A short text (in the repo README or separate file) describing:
    - The concept of your creature.
